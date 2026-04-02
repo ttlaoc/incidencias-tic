@@ -14,8 +14,8 @@
 
 // ======================
 // TODO 1: pega aquí tus credenciales (Supabase → Project Settings → API)
-const SUPABASE_URL = "PON_AQUI_TU_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "PON_AQUI_TU_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://udrmulxyagsxpirmizhq.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_i0IE3yhfvtfPH46QDgPZnw_zk_LxMRO";
 // ======================
 
 // Creamos el cliente de Supabase (supabase-js viene cargado por CDN en index.html)
@@ -178,7 +178,6 @@ formIncidencia.addEventListener("submit", async (ev) => {
 
     if (!uid) throw new Error("No hay sesión activa.");
 
-    // TODO 2: Insert en tabla incidencias
     const payload = {
       user_id: uid, // dueña de la incidencia
       aula: aula.value.trim(),
@@ -188,8 +187,16 @@ formIncidencia.addEventListener("submit", async (ev) => {
       estado: "abierta",
     };
 
+    // TODO 2: INSERT en Supabase (tabla "incidencias") usando payload.
+    // Debe devolver error si falla (por ejemplo, por RLS).
+    // Pista: supabaseClient.from("incidencias").insert(...)
+    // const { error } = ...
+    // if (error) throw error;
+
+    ////////////////////////////////// CÓDIGO GENERADO ///////////////////////////////////////////////////////
     const { error } = await supabaseClient.from("incidencias").insert(payload);
     if (error) throw error;
+    ////////////////////////////////// FIN CÓDIGO GENERADO ///////////////////////////////////////////////////
 
     formIncidencia.reset();
     showMsg("Incidencia creada.", "ok");
@@ -213,7 +220,16 @@ formIncidencia.addEventListener("submit", async (ev) => {
  */
 async function loadIncidencias() {
   try {
-    // TODO 3: Select de MIS incidencias (RLS ya filtra por user_id)
+    // TODO 3: SELECT en Supabase para traer:
+    // "id, created_at, aula, equipo, tipo, estado"
+    // y ordenar por created_at descendente.
+    // Pista: supabaseClient.from("incidencias").select(...).order(...)
+    // const { data, error } = ...
+    // if (error) throw error;
+    // renderIncidencias(data ?? []);    
+
+    ////////////////////////////////// CÓDIGO GENERADO ///////////////////////////////////////////////////////
+
     const { data, error } = await supabaseClient
       .from("incidencias")
       .select("id, created_at, aula, equipo, tipo, estado")
@@ -222,6 +238,8 @@ async function loadIncidencias() {
     if (error) throw error;
 
     renderIncidencias(data ?? []);
+    ////////////////////////////////// FIN CÓDIGO GENERADO ///////////////////////////////////////////////////
+
   } catch (e) {
     showMsg(e.message, "err");
   }
@@ -278,15 +296,24 @@ function renderIncidencias(rows) {
  */
 async function cerrarIncidencia(id) {
   try {
-    // TODO 4: Update estado='cerrada' SOLO si es del usuario (RLS)
+    // TODO 4: UPDATE en Supabase:
+    // cambiar estado a "cerrada" en la fila con ese id.
+    // Pista: supabaseClient.from("incidencias").update(...).eq("id", id)
+    // const { error } = ...
+    // if (error) throw error;
+
+    ////////////////////////////////// CÓDIGO GENERADO ///////////////////////////////////////////////////////
     const { error } = await supabaseClient
       .from("incidencias")
       .update({ estado: "cerrada" })
       .eq("id", id);
 
     if (error) throw error;
+    ////////////////////////////////// FIN CÓDIGO GENERADO ///////////////////////////////////////////////////
 
     showMsg("Incidencia cerrada.", "ok");
+
+    // Recargamos lista para que aparezcan al instante
     await loadIncidencias();
   } catch (e) {
     showMsg(e.message, "err");
